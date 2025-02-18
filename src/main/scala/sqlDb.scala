@@ -23,8 +23,24 @@ object sqlDb {
       .option("dbtable","Customer")
       .load()
 
-    cust_df.show(5)
+    cust_df.show(10)
 
+    cust_df.filter("Company is not null").show(10,truncate = false)
+
+    val invoice_df = spark.read.format("jdbc")
+      .option("mode","permissive")
+      .option("url",jdbcUrl)
+      .option("dbtable","Invoice")
+      .option("driver","org.sqlite.JDBC")
+      .load()
+
+    invoice_df.show(5)
+
+    ///Joining Customer and Invoice table from DB
+    cust_df.join(invoice_df,cust_df("CustomerId") === invoice_df("CustomerId")).show(5)
+
+
+    scala.io.StdIn.readLine("Enter to terminate the session..")
 
   }
 }
